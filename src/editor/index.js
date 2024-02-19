@@ -97,12 +97,9 @@ var questionsData = [
   },
 ];
 
-const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
-  const [height, setHeight] = useState(0);
-  const [activeTab, setActiveTab] = useState(2);
+const AssessmentCoding = ({ question = 1 }) => {
   const [customInput, setCustomInput] = useState("");
   const [code, setCode] = useState();
-  const [executeMode, setExecuteMode] = useState("cases");
   const [executeLoading, setExecuteLoading] = useState(false);
   const [questionDetails, setQuestionDetails] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -129,8 +126,6 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
         code !== "" &&
         (mode === "cases" || (mode === "input" && trimmedCustomInput !== ""))
       ) {
-        setExecuteMode(mode);
-
         const codeArray = [];
         if (mode === "input") {
           codeArray.push({
@@ -169,30 +164,24 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
 
                 for (let i = 0; i < submissions.length; i++) {
                   if (mode === "input") {
-                    questionDetailsCopy.custom_output =
-                      base64_decode(submissions[i].stdout) || "";
+                    questionDetailsCopy.custom_output = submissions[i]?.stdout
+                      ? base64_decode(submissions[i]?.stdout).replace(/\n/g, "")
+                      : "";
                     questionDetailsCopy.custom_compiler_output =
                       submissions[i]?.status.description || "";
-                    questionDetailsCopy.custom_compiler_output =
-                      submissions[i]?.compiler_output || "";
-                    questionDetailsCopy.custom_tle = submissions[i]?.tle;
                   } else if (mode === "cases") {
-                    questionDetailsCopy.question_data[i].output_matched =
-                      submissions[i]?.output_matched;
                     questionDetailsCopy.question_data[i].candidate_output =
-                      base64_decode(submissions[i]?.stdout) || "";
-                    questionDetailsCopy.question_data[i].show_correct = true;
-                    questionDetailsCopy.question_data[i].description =
-                      submissions[i]?.status.description || "";
+                      submissions[i]?.stdout
+                        ? base64_decode(submissions[i]?.stdout).replace(
+                            /\n/g,
+                            ""
+                          )
+                        : "";
                     questionDetailsCopy.question_data[i].compiler_output =
                       submissions[i]?.status.description || "";
-                    questionDetailsCopy.question_data[i].tle =
-                      submissions[i]?.tle;
                     if (
-                      base64_decode(submissions[i]?.stdout).replace(
-                        /\n/g,
-                        ""
-                      ) === questionDetailsCopy.question_data[i].std_output
+                      questionDetailsCopy.question_data[i].candidate_output ===
+                      questionDetailsCopy.question_data[i].std_output
                     ) {
                       count += 1;
                     }
@@ -213,10 +202,6 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
           .catch((err) => {
             console.log(err);
           });
-        setExecuteMode("");
-        const tempHeight = height < 100 ? 200 : height;
-        setHeight(tempHeight);
-        setActiveTab(mode === "cases" ? 2 : activeTab);
       }
       setExecuteLoading(false);
     }
@@ -283,7 +268,7 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
               </button>
             </Styled.RunWrapDiv>
           </Styled.ResultWrapDiv>
-          <Styled.ResultDiv style={{ height: `${height}px` }}>
+          <Styled.ResultDiv style={{ height: "200px" }}>
             <div style={{ padding: "0px", height: "100%" }}>
               <Styled.CaseWrapDiv>
                 <Styled.CaseValueWrapDiv id="casevaluewrapdiv">
@@ -295,16 +280,7 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
                         justifyContent: "space-between",
                       }}
                     >
-                      <div
-                        style={{
-                          margin: "8px 0px 0px 0px",
-                        }}
-                      >
-                        Input
-                      </div>
-                      <Styled.CustomLoaderDiv
-                        isLoading={executeMode === "input"}
-                      />
+                      <div>Input</div>
                     </div>
                     <textarea
                       rows="4"
@@ -316,23 +292,10 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
                     <div>Your Output</div>
                     <div>{questionDetails?.custom_output}</div>
                   </Styled.CaseInputDiv>
-                  {(questionDetails?.custom_output === "" ||
-                    questionDetails?.custom_output === null) &&
-                  questionDetails?.custom_description !== "Accepted" ? (
-                    <Styled.CaseDescriptionsDiv>
-                      {questionDetails?.custom_description}
-                    </Styled.CaseDescriptionsDiv>
-                  ) : (
-                    ""
-                  )}
-                  {questionDetails?.custom_compiler_output !== null ||
-                  questionDetails?.custom_compiler_output !== "" ? (
-                    <Styled.CaseDescriptionsDiv>
-                      {questionDetails?.custom_compiler_output}
-                    </Styled.CaseDescriptionsDiv>
-                  ) : (
-                    ""
-                  )}
+                  <Styled.CaseDescriptionsDiv>
+                    {questionDetails?.custom_compiler_output !== "Accepted" &&
+                      questionDetails?.custom_compiler_output}
+                  </Styled.CaseDescriptionsDiv>
                 </Styled.CaseValueWrapDiv>
               </Styled.CaseWrapDiv>
             </div>
@@ -346,11 +309,16 @@ const AssessmentCoding = ({ question = 1, activeExecute = {} }) => {
         onOk={() => setIsModalOpen(false)}
       >
         {questionDetails?.question_data?.map((qDetail, index) => (
-          <div>
+          <div key={index}>
             <h4>Test Case {index + 1}</h4>
             <p>Input: {qDetail.std_input}</p>
             <p>Expected Output: {qDetail.std_output}</p>
             <p>Your Output: {qDetail.candidate_output}</p>
+            <p>{qDetail.std_output === qDetail.candidate_output && "Passed"}</p>
+            <p style={{ color: "red" }}>
+              {qDetail.compiler_output !== "Accepted" &&
+                qDetail.compiler_output}
+            </p>
           </div>
         ))}
       </Modal>
