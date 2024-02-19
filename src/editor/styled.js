@@ -18,6 +18,11 @@ export const LeftDiv = styled.div`
   overflow-y: scroll;
   background-color: #ffffff;
   border-right: 1px solid #efefef;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
   @media (max-width: 992px) {
     width: 100% !important;
   }
@@ -119,36 +124,6 @@ export const WidthResizeDiv = styled.div`
   align-items: center;
   justify-content: center;
   cursor: ew-resize;
-`;
-export const Drag02Div = styled.div`
-  height: 14px;
-  width: 100%;
-  background-color: #ffffff;
-  cursor: ns-resize;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-`;
-export const Drag01Div = styled.div`
-  width: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0px;
-  margin: 0px;
-  box-shadow: none;
-  text-shadow: none;
-  background: none;
-  & div {
-    height: 3px;
-    width: 3px;
-    background-color: rgb(70, 78, 89);
-    border-radius: 3px;
-    margin: 1px;
-  }
 `;
 export const BottomDiv = styled.div`
   border-top: 1px solid rgb(231, 233, 234);
@@ -254,7 +229,7 @@ export const AnswerDiv = styled.div`
   color: #1e2431;
 `;
 export const ResultDiv = styled.div`
-  overflow-x: scroll;
+  overflow-x: hidden;
   background-color: #ffffff;
 `;
 export const TestResultDiv = styled.div`
@@ -379,6 +354,11 @@ export const CaseNameDiv = styled.div`
   align-items: flex-start;
   flex-shrink: 0;
   overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
   overflow-x: auto;
   background-color: #f7f8f9;
 `;
@@ -509,6 +489,11 @@ export const CaseValueWrapDiv = styled.div`
   flex-grow: 1;
   box-sizing: border-box;
   overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 export const CaseInputDiv = styled.div`
   display: flex;

@@ -14,7 +14,7 @@ class CodeExecutionView(APIView):
         headers = {
             "content-type": "application/json",
             "Content-Type": "application/json",
-            "X-RapidAPI-Key": "3b68920a96msh656e0304460499fp11f8c1jsn8e6d7cb6e1af",
+            "X-RapidAPI-Key": "83193fd27fmshbf1bc2542901571p1accf1jsnd4da3cd60aa3",
             "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
         }
 
@@ -30,7 +30,7 @@ class CodeResultView(APIView):
         querystring = {"tokens":tokens,"base64_encoded":"true","fields":"*"}
 
         headers = {
-            "X-RapidAPI-Key": "3b68920a96msh656e0304460499fp11f8c1jsn8e6d7cb6e1af",
+            "X-RapidAPI-Key": "83193fd27fmshbf1bc2542901571p1accf1jsnd4da3cd60aa3",
             "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
         }
 
