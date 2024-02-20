@@ -1,11 +1,11 @@
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .models import CodeSubmission
 
 class CodeExecutionView(APIView):
     def post(self, request):
         code = request.data.get('code', '')
-        # language_id = request.data.get('language_id', 71)  # Example: Python language ID
         url = "https://judge0-ce.p.rapidapi.com/submissions/batch"
 
         querystring = {"base64_encoded":"true"}
@@ -36,3 +36,19 @@ class CodeResultView(APIView):
 
         response = requests.get(url, headers=headers, params=querystring)
         return Response(response.json())
+
+class SubmissionView(APIView):
+    def post(self, request):
+        code = request.data.get('code', '')
+        inputs = request.data.get('inputs', '')
+        expected = request.data.get('expected', '')
+        outputs = request.data.get('outputs', '')
+        result = request.data.get('result', '')
+        CodeSubmission.objects.create(code=code, inputs=inputs, expected=expected, outputs=outputs, result=result)
+        return Response("message: {'Code entered into DB''}")
+
+    def get(self, request):
+        submissions = CodeSubmission.objects.all()
+        submissionsList = [{'code': submission.code, 'inputs': submission.inputs, 'expected': submission.expected, 'outputs': submission.outputs, 'result': submission.result} for submission in submissions]
+        return Response({'submissionsList': submissionsList})
+        

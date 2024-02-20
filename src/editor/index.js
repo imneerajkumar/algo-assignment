@@ -97,16 +97,18 @@ var questionsData = [
   },
 ];
 
-const AssessmentCoding = ({ question = 1 }) => {
+const AssessmentCoding = () => {
   const [customInput, setCustomInput] = useState("");
   const [code, setCode] = useState();
   const [executeLoading, setExecuteLoading] = useState(false);
   const [questionDetails, setQuestionDetails] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [tab, setTab] = useState(false);
+  const [prevSubmissions, setPrevSubmissions] = useState([]);
 
   useEffect(() => {
-    const qDetails = questionsData[question - 1]?.question_details || {};
+    const qDetails = questionsData[0]?.question_details || {};
     setCode(JSON.parse(qDetails?.boiler_plate?.predefinedCode) || "");
     setQuestionDetails(qDetails);
 
@@ -115,8 +117,15 @@ const AssessmentCoding = ({ question = 1 }) => {
     } else {
       setCustomInput("");
     }
+
+    axios
+      .get("http://127.0.0.1:8000/api/set-submission/")
+      .then((res) => {
+        setPrevSubmissions(res.data.submissionsList);
+      })
+      .catch((e) => console.log(e));
     // eslint-disable-next-line
-  }, [question, questionsData]);
+  }, [questionsData]);
 
   const codeExecute = async (mode) => {
     if (executeLoading === false) {
@@ -151,14 +160,13 @@ const AssessmentCoding = ({ question = 1 }) => {
           .then((res) => {
             const data = res.data;
             const tokens = [];
-            data.forEach((item) => tokens.push(item.token));
+            data?.forEach((item) => tokens.push(item.token));
             axios
               .post("http://127.0.0.1:8000/api/get-result/", {
                 tokens: tokens.join(","),
               })
               .then((res) => {
                 const submissions = res.data.submissions;
-                console.log(submissions);
                 const questionDetailsCopy = { ...questionDetails };
                 let count = 0;
 
@@ -193,6 +201,22 @@ const AssessmentCoding = ({ question = 1 }) => {
                     `${count}/${submissions?.length} test cases passed.`
                   );
                   setIsModalOpen(true);
+                  axios
+                    .post("http://127.0.0.1:8000/api/set-submission/", {
+                      code: code,
+                      result: message,
+                      inputs: questionDetails?.question_data
+                        .map((qDetail) => qDetail.std_input)
+                        .join("#^#"),
+                      expected: questionDetails?.question_data
+                        .map((qDetail) => qDetail.std_output)
+                        .join("#^#"),
+                      outputs: questionDetails?.question_data
+                        .map((qDetail) => qDetail.compiler_output)
+                        .join("#^#"),
+                    })
+                    .then((res) => console.log(res))
+                    .catch((e) => console.log(e));
                 }
               })
               .catch((err) => {
@@ -210,8 +234,41 @@ const AssessmentCoding = ({ question = 1 }) => {
   return (
     <Styled.ContentDiv>
       <Styled.LeftDiv style={{ width: "550px" }}>
-        <Styled.QuestionDiv>{`Q${question}. ${questionDetails?.title}`}</Styled.QuestionDiv>
-        <Styled.AnswerDiv>{questionDetails?.questions_detail}</Styled.AnswerDiv>
+        <Styled.QuestionDiv>{`Q1. ${questionDetails?.title}`}</Styled.QuestionDiv>
+        {!tab && (
+          <Styled.AnswerDiv>
+            {questionDetails?.questions_detail}
+          </Styled.AnswerDiv>
+        )}
+        {tab && (
+          <Styled.AnswerDiv>
+            {prevSubmissions.map((item, idx) => (
+              <div key={item.result + idx}>
+                <h3>Code: </h3>
+                <p>{item.code}</p>
+                <h4>Inputs: </h4>
+                {item?.inputs?.split("#^#").map((input, i) => (
+                  <p key={input + i}>
+                    Input{i + 1}: {input}
+                  </p>
+                ))}
+                <h4>Expepected Outputs: </h4>
+                {item?.expected?.split("#^#").map((output, i) => (
+                  <p key={output + i}>
+                    Output{i + 1}: {output}
+                  </p>
+                ))}
+                <h4>Your Outputs: </h4>
+                {item?.outputs?.split("#^#").map((output, i) => (
+                  <p key={output + i}>
+                    Output{i + 1}: {output}
+                  </p>
+                ))}
+                <h4 style={{ color: "green" }}>{item.result}</h4>
+              </div>
+            ))}
+          </Styled.AnswerDiv>
+        )}
       </Styled.LeftDiv>
       <Styled.RightDiv>
         <Styled.LanguageWrapDiv>
@@ -251,6 +308,7 @@ const AssessmentCoding = ({ question = 1 }) => {
                   backgroundColor: "#ffffff",
                   color: "#1B49EA",
                   border: "1px solid #e6e6e6",
+                  cursor: "pointer",
                 }}
                 onClick={() => codeExecute("input")}
               >
@@ -261,10 +319,22 @@ const AssessmentCoding = ({ question = 1 }) => {
                   backgroundColor: "#ffffff",
                   color: "#1B49EA",
                   border: "1px solid #e6e6e6",
+                  cursor: "pointer",
                 }}
                 onClick={() => codeExecute("cases")}
               >
                 Run Test
+              </button>
+              <button
+                style={{
+                  backgroundColor: "#1B49EA",
+                  color: "#ffffff",
+                  border: "1px solid #e6e6e6",
+                  cursor: "pointer",
+                }}
+                onClick={() => setTab(!tab)}
+              >
+                {tab ? "Hide Submissions" : "View Submissions"}
               </button>
             </Styled.RunWrapDiv>
           </Styled.ResultWrapDiv>
@@ -314,7 +384,9 @@ const AssessmentCoding = ({ question = 1 }) => {
             <p>Input: {qDetail.std_input}</p>
             <p>Expected Output: {qDetail.std_output}</p>
             <p>Your Output: {qDetail.candidate_output}</p>
-            <p>{qDetail.std_output === qDetail.candidate_output && "Passed"}</p>
+            <p style={{ color: "green" }}>
+              {qDetail.std_output === qDetail.candidate_output && "Passed"}
+            </p>
             <p style={{ color: "red" }}>
               {qDetail.compiler_output !== "Accepted" &&
                 qDetail.compiler_output}

@@ -16,9 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-# from books import urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('books.urls'),include('judge0_api.urls')),
     path('api/', include('judge0_api.urls'))
 ]
