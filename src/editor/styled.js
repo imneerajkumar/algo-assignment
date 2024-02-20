@@ -92,7 +92,7 @@ export const QuestionDiv = styled.div`
   padding: 30px 30px 20px 30px;
   font-size: 20px;
   font-weight: 700;
-  border-bottom: 1px solid #efefef;
+  border-bottom: 3px solid black;
   text-align: left;
   line-height: 30px;
   color: #1e2431;

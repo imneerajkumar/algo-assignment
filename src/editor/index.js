@@ -122,6 +122,7 @@ const AssessmentCoding = () => {
       .get("http://127.0.0.1:8000/api/set-submission/")
       .then((res) => {
         setPrevSubmissions(res.data.submissionsList);
+        console.log(res.data.submissionsList);
       })
       .catch((e) => console.log(e));
     // eslint-disable-next-line
@@ -204,7 +205,7 @@ const AssessmentCoding = () => {
                   axios
                     .post("http://127.0.0.1:8000/api/set-submission/", {
                       code: code,
-                      result: message,
+                      result: `${count}/${submissions?.length} test cases passed.`,
                       inputs: questionDetails?.question_data
                         .map((qDetail) => qDetail.std_input)
                         .join("#^#"),
@@ -212,7 +213,7 @@ const AssessmentCoding = () => {
                         .map((qDetail) => qDetail.std_output)
                         .join("#^#"),
                       outputs: questionDetails?.question_data
-                        .map((qDetail) => qDetail.compiler_output)
+                        .map((qDetail) => qDetail.candidate_output)
                         .join("#^#"),
                     })
                     .then((res) => console.log(res))
@@ -243,25 +244,36 @@ const AssessmentCoding = () => {
         {tab && (
           <Styled.AnswerDiv>
             {prevSubmissions.map((item, idx) => (
-              <div key={item.result + idx}>
+              <div
+                key={item.result + idx}
+                style={{ borderBottom: "2px solid black" }}
+              >
                 <h3>Code: </h3>
-                <p>{item.code}</p>
+                <p
+                  style={{
+                    backgroundColor: "#ccc",
+                    padding: "15px",
+                    borderRadius: "20px",
+                  }}
+                >
+                  {item.code}
+                </p>
                 <h4>Inputs: </h4>
                 {item?.inputs?.split("#^#").map((input, i) => (
                   <p key={input + i}>
-                    Input{i + 1}: {input}
+                    Input {i + 1}: {input}
                   </p>
                 ))}
                 <h4>Expepected Outputs: </h4>
                 {item?.expected?.split("#^#").map((output, i) => (
                   <p key={output + i}>
-                    Output{i + 1}: {output}
+                    Output {i + 1}: {output}
                   </p>
                 ))}
                 <h4>Your Outputs: </h4>
                 {item?.outputs?.split("#^#").map((output, i) => (
                   <p key={output + i}>
-                    Output{i + 1}: {output}
+                    Output {i + 1}: {output}
                   </p>
                 ))}
                 <h4 style={{ color: "green" }}>{item.result}</h4>
@@ -274,7 +286,7 @@ const AssessmentCoding = () => {
         <Styled.LanguageWrapDiv>
           <Styled.LanguageDiv>
             <Styled.LanguageTextDiv>Language:</Styled.LanguageTextDiv>
-            <Styled.LanguageTextDiv>Python</Styled.LanguageTextDiv>
+            <Styled.LanguageTextDiv>Python (3.8.2)</Styled.LanguageTextDiv>
           </Styled.LanguageDiv>
         </Styled.LanguageWrapDiv>
         <Styled.TopDiv>
