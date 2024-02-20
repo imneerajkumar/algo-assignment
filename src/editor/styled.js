@@ -89,7 +89,7 @@ export const RunWrapDiv = styled.div`
   }
 `;
 export const QuestionDiv = styled.div`
-  padding: 30px 30px 20px 30px;
+  padding: 30px 30px 15px 30px;
   font-size: 20px;
   font-weight: 700;
   border-bottom: 3px solid black;

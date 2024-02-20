@@ -122,7 +122,6 @@ const AssessmentCoding = () => {
       .get("http://127.0.0.1:8000/api/set-submission/")
       .then((res) => {
         setPrevSubmissions(res.data.submissionsList);
-        console.log(res.data.submissionsList);
       })
       .catch((e) => console.log(e));
     // eslint-disable-next-line
@@ -264,7 +263,7 @@ const AssessmentCoding = () => {
                     Input {i + 1}: {input}
                   </p>
                 ))}
-                <h4>Expepected Outputs: </h4>
+                <h4>Expected Outputs: </h4>
                 {item?.expected?.split("#^#").map((output, i) => (
                   <p key={output + i}>
                     Output {i + 1}: {output}
