@@ -106,6 +106,7 @@ const AssessmentCoding = () => {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState(false);
   const [prevSubmissions, setPrevSubmissions] = useState([]);
+  const url = "http://127.0.0.1:8000/api";
 
   useEffect(() => {
     const qDetails = questionsData[0]?.question_details || {};
@@ -119,7 +120,7 @@ const AssessmentCoding = () => {
     }
 
     axios
-      .get("http://127.0.0.1:8000/api/set-submission/")
+      .get(`${url}/set-submission/`)
       .then((res) => {
         setPrevSubmissions(res.data.submissionsList);
       })
@@ -153,7 +154,7 @@ const AssessmentCoding = () => {
         }
 
         axios
-          .post("http://127.0.0.1:8000/api/execute/", {
+          .post(`${url}/execute/`, {
             code: codeArray,
             language_id: questionDetails?.id || null,
           })
@@ -162,7 +163,7 @@ const AssessmentCoding = () => {
             const tokens = [];
             data?.forEach((item) => tokens.push(item.token));
             axios
-              .post("http://127.0.0.1:8000/api/get-result/", {
+              .post(`${url}/get-result/`, {
                 tokens: tokens.join(","),
               })
               .then((res) => {
@@ -202,7 +203,7 @@ const AssessmentCoding = () => {
                   );
                   setIsModalOpen(true);
                   axios
-                    .post("http://127.0.0.1:8000/api/set-submission/", {
+                    .post(`${url}/set-submission/`, {
                       code: code,
                       result: `${count}/${submissions?.length} test cases passed.`,
                       inputs: questionDetails?.question_data
