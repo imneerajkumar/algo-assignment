@@ -109,6 +109,15 @@ const AssessmentCoding = () => {
   // const url = "http://127.0.0.1:8000/api";
   const url = "http://54.236.88.86:8000/api";
 
+  const getSubmissions = () => {
+    axios
+      .get(`${url}/set-submission/`)
+      .then((res) => {
+        setPrevSubmissions(res.data.submissionsList);
+      })
+      .catch((e) => console.log(e));
+  };
+
   useEffect(() => {
     const qDetails = questionsData[0]?.question_details || {};
     setCode(JSON.parse(qDetails?.boiler_plate?.predefinedCode) || "");
@@ -120,12 +129,7 @@ const AssessmentCoding = () => {
       setCustomInput("");
     }
 
-    axios
-      .get(`${url}/set-submission/`)
-      .then((res) => {
-        setPrevSubmissions(res.data.submissionsList);
-      })
-      .catch((e) => console.log(e));
+    getSubmissions();
     // eslint-disable-next-line
   }, [questionsData]);
 
@@ -217,7 +221,10 @@ const AssessmentCoding = () => {
                         .map((qDetail) => qDetail.candidate_output)
                         .join("#^#"),
                     })
-                    .then((res) => console.log(res))
+                    .then((res) => {
+                      console.log(res);
+                      getSubmissions();
+                    })
                     .catch((e) => console.log(e));
                 }
               })
