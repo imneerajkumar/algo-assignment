@@ -106,7 +106,8 @@ const AssessmentCoding = () => {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState(false);
   const [prevSubmissions, setPrevSubmissions] = useState([]);
-  const url = "http://127.0.0.1:8000/api";
+  // const url = "http://127.0.0.1:8000/api";
+  const url = "http://54.236.88.86:8000/api";
 
   useEffect(() => {
     const qDetails = questionsData[0]?.question_details || {};

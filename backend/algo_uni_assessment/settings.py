@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-j-&78+p%p(lt6#-3a5nl95c+*1920%gnptmnu-%ho#t$+u6q#7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','54.236.88.86']
 
 
 # Application definition
@@ -56,7 +56,10 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
 "http://localhost:3000",
+"https://algouni-ide.netlify.app"
 ]
+
+CORS_ALLOW_HEADERS = ['*']
 
 ROOT_URLCONF = 'algo_uni_assessment.urls'
 
