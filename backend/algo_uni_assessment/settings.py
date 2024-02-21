@@ -56,7 +56,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
 "http://localhost:3000",
-"https://algouni-ide.netlify.app"
+"http://54.209.163.3:3000"
 ]
 
 CORS_ALLOW_HEADERS = ['*']
